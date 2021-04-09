@@ -1,0 +1,506 @@
+/*
+
+Yext Engineering is moving to a new office building.
+How exciting!
+
+To ensure maximum Engineering happiness, the Yext Facilities team wants to ensure that no Engineer is too far away from a Pantry stocked with delicious and nutritious refreshments.
+
+To help Facilities plan the layout of Engineering desks in the new office space, you will implement a program that calculates distances to the nearest Pantry.
+
+Your program will accept a list of cells representing Pantries and a list of Blocked cells that prohibit movement.
+
+Your program should return a blueprint according to the specifications below.
+
+
+In the example blueprints below,
+X - blocked cell
+P - pantry
+
+Input blueprint with Pantry and Blocked cells :
+
+       0  1  2  3
+    0     X     P
+    1           X
+    2  P
+    3        X  P
+
+blueprint with calculated Pantry distances :
+
+       0  1  2  3
+    0  2  X  1  P
+    1  1  2  2  X
+    2  P  1  2  1
+    3  1  2  X  P
+
+Expected Output blueprint in 2D integer array format :
+P replaced with  0
+X replaced with -1
+
+       0  1  2  3
+    0  2 -1  1  0
+    1  1  2  2 -1
+    2  0  1  2  1
+    3  1  2 -1  0
+
+At a distance of one from a Pantry cell are the four cells that are vertically and horizontally adjacent to the Pantry cell.
+
+
+If a cell has no access to a Pantry, then it should be marked with a -2.
+
+For example, the input blueprint below
+
+       0  1
+    0     X
+    1  X  P
+
+should result in the following output blueprint
+
+       0  1
+    0 -2 -1
+    1 -1  0
+
+since cell [0,0] has no access to the pantry at [1,1] due to all possible paths being blocked.
+
+*/
+
+/**
+Idea:
+For every pantry, run a BFS, where the level icnreases the distance each time.
+Take the lower of (existing cell, current bfs level) and place it in the cell.
+
+After this:
+All blockages are -1
+All unmaked cells are -2
+
+**/
+#include <algorithm>
+#include <iostream>
+#include <iomanip>
+#include <vector>
+
+using namespace std;
+
+typedef vector<vector<int>> Blueprint;
+
+const int PANTRY_COUNT = -3;
+const int BLOCKED_COUNT = -1;
+const int UNACCESSABLE_COUNT = -2;
+const int NEW_PANTRY_COUNT = 0;
+
+class Pantry
+{
+
+private :
+
+    class Cell; // forward declaration
+
+    static bool out_of_bounds(const int N, const Cell & cell) {
+      return ((cell.row < 0) || (cell.row >= N)) || ((cell.column < 0) || (cell.column >= N));
+    }
+  
+    static vector<Cell> getNeighbors(const int N,
+                                     const Cell & cell,
+                                     const Blueprint & blueprint) {
+      vector<Cell> neighbors;
+      for (int row_difference = -1; row_difference != 2; ++row_difference) {
+        for (int column_difference = -1; column_difference != 2; ++column_difference) {
+          if ((row_difference == 0) && (column_difference == 0)) {
+            continue;
+          }
+          if ((row_difference == 1) && (column_difference == 1)) {
+            continue;
+          }
+          if ((row_difference == 1) && (column_difference == -1)) {
+            continue;
+          }
+          if ((row_difference == -1) && (column_difference ==1)) {
+            continue;
+          }
+          if ((row_difference == -1) && (column_difference ==-1)) {
+            continue;
+          }
+
+
+          auto new_row = cell.row + row_difference;
+          auto new_column = cell.column + column_difference;
+          auto new_cell = Cell{new_row, new_column};
+          
+          if (out_of_bounds(N, new_cell)) {
+            continue;
+          }
+          
+          
+          if ((blueprint[new_cell.row][new_cell.column] == PANTRY_COUNT) ||
+              (blueprint[new_cell.row][new_cell.column] == BLOCKED_COUNT)) {
+            continue;
+          }
+          
+          
+          if (blueprint[new_cell.row][new_cell.column] != 0) {
+            continue;
+          }
+          
+          neighbors.push_back(new_cell);
+        }
+      }
+      return neighbors;
+    }
+
+    static void traverseBFSPantryCell(const int N,
+                               const Cell & pantryCell,
+                               Blueprint & blueprint) {
+      auto bfsCells = getNeighbors(N, pantryCell, blueprint);
+      int currentLevel = 1;
+      
+      vector<Cell> nextBfsCells;
+      while (!isBlueprintFilled(N, blueprint)) {
+        cout << "CURRENT LEVEL: " << currentLevel <<endl;
+        printBlueprint(blueprint, N);
+        for (auto && cell : bfsCells) {
+          if (out_of_bounds(N, cell)) {
+            continue;
+          }
+          
+          //cout << "HERE4" << endl;
+              
+          if ((blueprint[cell.row][cell.column] == PANTRY_COUNT) ||
+              (blueprint[cell.row][cell.column] == BLOCKED_COUNT)) {
+            continue;
+          }
+          
+          //cout << "HERE5" << endl;
+          
+          if (blueprint[cell.row][cell.column] == 0) {
+            blueprint[cell.row][cell.column] = currentLevel;
+          }
+          else if (currentLevel > blueprint[cell.row][cell.column]) {
+             continue;
+          }
+
+
+          
+          auto new_neighbors = getNeighbors(N, cell, blueprint);
+          if (new_neighbors.empty()) {
+            continue;
+          }
+          
+          copy(new_neighbors.begin(), new_neighbors.end(), back_inserter(nextBfsCells));
+          
+        }
+        ++currentLevel;
+        bfsCells = nextBfsCells;
+        nextBfsCells.clear();
+      }
+      
+    }
+  
+    static void setUnaccessableCells(const int N, Blueprint & blueprint) {
+      for (auto row_index = 0; row_index != N; ++row_index) {
+          for (auto column_index = 0; column_index != N; ++column_index) {
+            if (blueprint[row_index][column_index] != 0) {
+              continue;
+            }
+            blueprint[row_index][column_index] = UNACCESSABLE_COUNT;
+          }
+        }
+      return;
+    }
+                           
+    
+    static void setPantryCells(const int N, Blueprint & blueprint) {
+      for (auto row_index = 0; row_index != N; ++row_index) {
+          for (auto column_index = 0; column_index != N; ++column_index) {
+            if (blueprint[row_index][column_index] == PANTRY_COUNT) {
+              blueprint[row_index][column_index] = NEW_PANTRY_COUNT;
+            }
+          }
+        }
+      return;
+    }
+  
+      static bool isBlueprintFilled(const int N, Blueprint & blueprint) {
+      for (auto row_index = 0; row_index != N; ++row_index) {
+          for (auto column_index = 0; column_index != N; ++column_index) {
+            if (blueprint[row_index][column_index] != 0) {
+              return false;
+            }
+          }
+        }
+      return true;
+    }
+          
+  
+    static Blueprint getBlueprint(const int N,
+                                  vector<Cell> blockedCells,
+                                  vector<Cell> pantryCells )
+    {
+        // implement this method and any helper methods you may need
+
+        // initialize empty NxN blueprint with default value 0
+        Blueprint blueprint (N, vector<int>(N,0));
+        for (auto && cell : blockedCells) {
+          blueprint[cell.row][cell.column] = BLOCKED_COUNT; 
+        }
+        for (auto && cell : pantryCells) {
+          blueprint[cell.row][cell.column] = PANTRY_COUNT; 
+          traverseBFSPantryCell(N, cell, blueprint);
+        }
+        setUnaccessableCells(N, blueprint);
+        setPantryCells(N, blueprint);
+
+      
+        return blueprint;
+    }
+
+
+
+    struct Cell
+    {
+        Cell(int row, int column)
+        {
+            this->row    = row;
+            this->column = column;
+        }
+
+        int row;
+        int column;
+    };
+
+
+    static void printBlueprint(Blueprint blueprint, int N)
+    {
+        for (int i=0; i<N; ++i)
+        {
+            for (int j=0; j<N; ++j)
+            {
+                cout << setw(3) << blueprint[i][j];
+            }
+
+            cout << endl;
+        }
+    }
+
+    static void test ( const int testCaseNumber,
+                       int N,
+                       vector<Cell> blockedCells,
+                       vector<Cell> pantryCells,
+                       vector<vector<int>> expectedOutputBlueprint)
+    {
+        Blueprint blueprint = getBlueprint(N, blockedCells, pantryCells);
+        printBlueprint(blueprint, N);
+
+        if ( areBlueprintsIdentical(N, blueprint, expectedOutputBlueprint) )
+        {
+            cout << "Test Case " << testCaseNumber << " Passed" << endl;
+        }
+        else
+        {
+            cout << "Test Case " << testCaseNumber << " Failed" << endl;
+        }
+    }
+
+    static bool areBlueprintsIdentical(int N, Blueprint bp1, Blueprint bp2)
+    {
+        for (int i=0; i<N; ++i)
+        {
+            for (int j=0; j<N; ++j)
+            {
+                if (bp1[i][j] != bp2[i][j])
+                  return false;
+            }
+        }
+
+        return true;
+    }
+
+public :
+
+    static void runTests()
+    {
+        /*
+        ------------- Test Case 1 -------------
+
+        Input :
+
+           0  1  2  3  4
+        0
+        1
+        2        P
+        3
+        4
+
+        Expected Blue Print :
+
+           0  1  2  3  4
+        0  4  3  2  3  4
+        1  3  2  1  2  3
+        2  2  1  0  1  2
+        3  3  2  1  2  3
+        4  4  3  2  3  4
+
+        */
+
+        vector<Cell> blockedCells;
+
+        vector<Cell> pantryCells;
+        pantryCells.push_back(Cell(2,2));
+
+        Blueprint expectedOutputBlueprintTestCase1 { { 4, 3, 2, 3, 4},
+                                                     { 3, 2, 1, 2, 3},
+                                                     { 2, 1, 0, 1, 2},
+                                                     { 3, 2, 1, 2, 3},
+                                                     { 4, 3, 2, 3, 4} };
+
+        test (1,
+              5,
+              blockedCells,
+              pantryCells,
+              expectedOutputBlueprintTestCase1);
+
+        /*
+        ------------- Test Case 2 -------------
+
+        Input :
+
+           0  1  2  3
+        0     X     P
+        1           X
+        2  P
+        3        X  P
+
+        Expected Blue Print :
+
+           0  1  2  3
+        0  2 -1  1  0
+        1  1  2  2 -1
+        2  0  1  2  1
+        3  1  2 -1  0
+
+        */
+
+        blockedCells.clear();
+        blockedCells.push_back(Cell(0,1));
+        blockedCells.push_back(Cell(1,3));
+        blockedCells.push_back(Cell(3,2));
+
+        pantryCells.clear();
+        pantryCells.push_back(Cell(2,0));
+        pantryCells.push_back(Cell(0,3));
+        pantryCells.push_back(Cell(3,3));
+
+        Blueprint expectedOutputBlueprintTestCase2 { { 2,-1, 1, 0},
+                                                     { 1, 2, 2,-1},
+                                                     { 0, 1, 2, 1},
+                                                     { 1, 2,-1, 0} };
+
+        test (2,
+              4,
+              blockedCells,
+              pantryCells,
+              expectedOutputBlueprintTestCase2);
+
+        /*
+        ------------- Test Case 3 -------------
+
+        Input :
+
+           0  1  2  3  4
+        0
+        1        P
+        2     P  P  P
+        3        P  X  X
+        4        X
+
+        Expected Blue Print :
+
+           0  1  2  3  4
+        0  3  2  1  2  3
+        1  2  1  0  1  2
+        2  1  0  0  0  1
+        3  2  1  0 -1 -1
+        4  3  2 -1 -2 -2
+
+        */
+
+        blockedCells.clear();
+        blockedCells.push_back(Cell(3,3));
+        blockedCells.push_back(Cell(3,4));
+        blockedCells.push_back(Cell(4,2));
+
+        pantryCells.clear();
+        pantryCells.push_back(Cell(2,2));
+        pantryCells.push_back(Cell(1,2));
+        pantryCells.push_back(Cell(3,2));
+        pantryCells.push_back(Cell(2,1));
+        pantryCells.push_back(Cell(2,3));
+
+        Blueprint expectedOutputBlueprintTestCase3 { { 3, 2, 1, 2, 3},
+                                                     { 2, 1, 0, 1, 2},
+                                                     { 1, 0, 0, 0, 1},
+                                                     { 2, 1, 0,-1,-1},
+                                                     { 3, 2,-1,-2,-2} };
+
+        test (3,
+              5,
+              blockedCells,
+              pantryCells,
+              expectedOutputBlueprintTestCase3);
+
+
+        /*
+        ------------- Test Case 4 -------------
+
+        Input :
+
+           0  1  2  3  4
+        0
+        1     X
+        2        X
+        3        P  X
+        4              X
+
+        Expected Blue Print :
+
+           0  1  2  3  4
+        0  5  6  7  8  9
+        1  4 -1  8  9 10
+        2  3  2 -1 10 11
+        3  2  1  0 -1 12
+        4  3  2  1  2 -1
+
+        */
+
+        blockedCells.clear();
+        blockedCells.push_back(Cell(1,1));
+        blockedCells.push_back(Cell(2,2));
+        blockedCells.push_back(Cell(3,3));
+        blockedCells.push_back(Cell(4,4));
+
+        pantryCells.clear();
+        pantryCells.push_back(Cell(3,2));
+
+        Blueprint expectedOutputBlueprintTestCase4 { { 5, 6, 7, 8, 9},
+                                                     { 4,-1, 8, 9,10},
+                                                     { 3, 2,-1,10,11},
+                                                     { 2, 1, 0,-1,12},
+                                                     { 3, 2, 1, 2,-1} };
+
+        test (4,
+              5,
+              blockedCells,
+              pantryCells,
+              expectedOutputBlueprintTestCase4);
+
+
+
+    }
+
+};
+
+
+int main() {
+
+  Pantry::runTests();
+
+  return 0;
+}
