@@ -13,5 +13,5 @@ Array.prototype.upperBound = function(target) {
             rightIndex = middleIndex;
         }
     }
-    return (leftIndex > 0 && this[leftIndex - 1] == target) ? leftIndex - 1 : -1;
+    return (leftIndex > 0 && this[leftIndex - 1] == target) ? (leftIndex - 1) : -1;
 };
