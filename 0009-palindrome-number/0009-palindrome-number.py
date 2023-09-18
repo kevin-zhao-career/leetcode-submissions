@@ -1,6 +1,12 @@
+def endsWithZero(integer : int):
+    return (integer % 10 == 0)
+
+def isInvalidArgument(integer : int):
+    return (integer < 0) or (integer != 0 and endsWithZero(integer))
+
 class Solution:
     def isPalindrome(self, integer: int) -> bool:
-        if integer < 0 or (integer != 0 and integer % 10 == 0):
+        if isInvalidArgument(integer):
             return False
 
         reversed_num = 0
