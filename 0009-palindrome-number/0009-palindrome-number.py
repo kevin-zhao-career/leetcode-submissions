@@ -2,17 +2,23 @@
 # Time Complexity: O(log n)
 # Space Complexity: O(1)
 
-def getLastDigit(integer : int):
+def getLastDigit(integer : int) -> bool:
     return (integer % 10)
 
-def endsWithZero(integer : int):
+def isZero(integer : int) -> bool:
+    return (integer == 0)
+
+def endsWithZero(integer : int) -> bool:
     return (getLastDigit(integer) == 0)
 
-def isInvalidArgument(integer : int):
+def isInvalidArgument(integer : int) -> bool:
     return (integer < 0) or (integer != 0 and endsWithZero(integer))
 
 class Solution:
     def isPalindrome(self, integer: int) -> bool:
+        if isZero(integer):
+            return True
+            
         if isInvalidArgument(integer):
             return False
 
