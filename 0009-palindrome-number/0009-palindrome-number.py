@@ -18,7 +18,7 @@ class Solution:
     def isPalindrome(self, integer: int) -> bool:
         if isZero(integer):
             return True
-            
+
         if isInvalidArgument(integer):
             return False
 
@@ -26,7 +26,7 @@ class Solution:
         original = integer
 
         while integer > reversed_number:
-            reversed_number = reversed_number * 10 + getLastDigit(integer)
+            reversed_number = (reversed_number * 10) + getLastDigit(integer)
             integer //= 10
 
         return (integer == reversed_number) or (integer == reversed_number // 10)
