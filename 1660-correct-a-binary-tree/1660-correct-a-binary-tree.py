@@ -9,20 +9,22 @@
 # Time Complexity: O(N)
 # Space Complexity: O(N)
 
+LEFT_CHILD_ATTRIBUTE_STRING : str = 'left'
+RIGHT_CHILD_ATTRIBUTE_STRING : str = 'right'
+CHILDREN_ATTRIBUTE_STRINGS : list[str] = [LEFT_CHILD_ATTRIBUTE_STRING, RIGHT_CHILD_ATTRIBUTE_STRING]
+
 def getValue(node : TreeNode) -> int:
-    return 0 if node is None else node.val
+    return 0 if (node is None) else node.val
 
 def getValues(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]):
     return [currentLevelNode.val for currentLevelNode in currentLevelNodeToParentDict.keys()]
 
-def setNodeToNoneIfValueEquivalent(parentNode : TreeNode, childNode : TreeNode, leftIfTrueElseRight : bool) -> None:
+def setNodeToNoneIfValueEquivalent(parentNode : TreeNode, childNode : TreeNode, childAttributeString : str) -> None:
     if (parentNode is None) or (childNode is None):
         return
 
-    accessorName = 'left' if leftIfTrueElseRight else 'right'
-
-    if (getValue(getattr(parentNode, accessorName)) == getValue(childNode)):
-        setattr(parentNode, accessorName, None)
+    if (getValue(getattr(parentNode, childAttributeString)) == getValue(childNode)):
+        setattr(parentNode, childAttributeString, None)
     
     return
 
@@ -30,30 +32,36 @@ def setChildNodeToNone(parentNode : TreeNode, childNode : TreeNode) -> None:
     if parentNode is None:
         return
 
-    setNodeToNoneIfValueEquivalent(parentNode, childNode, True)
-    setNodeToNoneIfValueEquivalent(parentNode, childNode, False)
+    for childrenAttributeString in CHILDREN_ATTRIBUTE_STRINGS:
+        setNodeToNoneIfValueEquivalent(parentNode, childNode, childrenAttributeString)
 
     return
+
+def addChildrenToLevelNodeToParentDict(levelNodeToParentDict : dict[TreeNode, TreeNode], node : TreeNode):
+    if node is None:
+        return
+
+    for childrenAttributeString in CHILDREN_ATTRIBUTE_STRINGS:
+        childNode = getattr(node, childrenAttributeString)
+        if childNode is None:
+            continue
+        levelNodeToParentDict[childNode] = node
 
 def getNextLevelNodeToParentDict(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]) -> Tuple[dict[TreeNode, TreeNode], bool]:
     foundInvalidNode = False
     nextLevelNodeToParentDict = {}
 
     for currentLevelNode, parentNode in currentLevelNodeToParentDict.items():
-        if currentLevelNode.left is not None:
-            nextLevelNodeToParentDict[currentLevelNode.left] = currentLevelNode
+        addChildrenToLevelNodeToParentDict(nextLevelNodeToParentDict, currentLevelNode)
 
         invalidCandidate = currentLevelNode.right
-        if invalidCandidate is None:
+        if (invalidCandidate not in currentLevelNodeToParentDict):
             continue
-
-        nextLevelNodeToParentDict[invalidCandidate] = currentLevelNode
-
-        if (invalidCandidate in currentLevelNodeToParentDict):
-            foundInvalidNode = True
-            parentNode = currentLevelNodeToParentDict[currentLevelNode]            
-            setChildNodeToNone(parentNode, currentLevelNode)
-            break
+        
+        foundInvalidNode = True
+        parentNode = currentLevelNodeToParentDict[currentLevelNode]            
+        setChildNodeToNone(parentNode, currentLevelNode)
+        return (nextLevelNodeToParentDict, foundInvalidNode)
 
     return (nextLevelNodeToParentDict, foundInvalidNode)
 
