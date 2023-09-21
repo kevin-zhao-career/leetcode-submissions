@@ -37,7 +37,7 @@ def setChildNodeToNone(parentNode : TreeNode, childNode : TreeNode) -> None:
 
     return
 
-def addChildrenToLevelNodeToParentDict(levelNodeToParentDict : dict[TreeNode, TreeNode], node : TreeNode):
+def addChildrenToLevelNodeToParentDict(levelNodeToParentDict : dict[TreeNode, TreeNode], node : TreeNode) -> None:
     if node is None:
         return
 
@@ -46,6 +46,7 @@ def addChildrenToLevelNodeToParentDict(levelNodeToParentDict : dict[TreeNode, Tr
         if childNode is None:
             continue
         levelNodeToParentDict[childNode] = node
+    return
 
 def getNextLevelNodeToParentDict(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]) -> Tuple[dict[TreeNode, TreeNode], bool]:
     foundInvalidNode = False
@@ -61,7 +62,7 @@ def getNextLevelNodeToParentDict(currentLevelNodeToParentDict : dict[TreeNode, T
         foundInvalidNode = True
         parentNode = currentLevelNodeToParentDict[currentLevelNode]            
         setChildNodeToNone(parentNode, currentLevelNode)
-        return (nextLevelNodeToParentDict, foundInvalidNode)
+        break
 
     return (nextLevelNodeToParentDict, foundInvalidNode)
 
@@ -71,7 +72,7 @@ class Solution:
             return root
 
         currentLevelNodeToParentDict = {root : None}
-        while currentLevelNodeToParentDict:
+        while len(currentLevelNodeToParentDict):
             (currentLevelNodeToParentDict, foundInvalidNode) = getNextLevelNodeToParentDict(currentLevelNodeToParentDict)
             if foundInvalidNode:
                 break
