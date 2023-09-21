@@ -15,15 +15,23 @@ def getValue(node : TreeNode) -> int:
 def getValues(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]):
     return [currentLevelNode.val for currentLevelNode in currentLevelNodeToParentDict.keys()]
 
-def setChildNodeToNone(parentNode : TreeNode, childNode : TreeNode):
+def setNodeToNoneIfValueEquivalent(parentNode : TreeNode, childNode : TreeNode, leftIfTrueElseRight : bool) -> None:
+    if (parentNode is None) or (childNode is None):
+        return
+
+    accessorName = 'left' if leftIfTrueElseRight else 'right'
+
+    if (getValue(getattr(parentNode, accessorName)) == getValue(childNode)):
+        setattr(parentNode, accessorName, None)
+    
+    return
+
+def setChildNodeToNone(parentNode : TreeNode, childNode : TreeNode) -> None:
     if parentNode is None:
         return
-    
-    if (parentNode.left is not None) and (getValue(parentNode.left) == getValue(childNode)):
-        parentNode.left = None
 
-    if (parentNode.right is not None) and (getValue(parentNode.right) == getValue(childNode)):
-        parentNode.right = None
+    setNodeToNoneIfValueEquivalent(parentNode, childNode, True)
+    setNodeToNoneIfValueEquivalent(parentNode, childNode, False)
 
     return
 
