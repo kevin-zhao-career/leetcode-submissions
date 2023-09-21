@@ -5,7 +5,7 @@
 #         self.left = left
 #         self.right = right
 
-# Breadth First Search, 
+# DFS O(n) O(n)
 
 class Solution:
     def correctBinaryTree(self, root: TreeNode) -> TreeNode:
