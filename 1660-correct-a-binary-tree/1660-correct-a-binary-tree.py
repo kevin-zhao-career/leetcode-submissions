@@ -9,20 +9,23 @@
 # Time Complexity: O(N)
 # Space Complexity: O(N)
 
+def getValue(node : TreeNode) -> int:
+    return 0 if node is None else node.val
+
+def getValues(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]):
+    return [currentLevelNode.val for currentLevelNode in currentLevelNodeToParentDict.keys()]
+
 def setChildNodeToNone(parentNode : TreeNode, childNode : TreeNode):
     if parentNode is None:
         return
     
-    if (parentNode.left is not None) and parentNode.left == childNode:
+    if (parentNode.left is not None) and (getValue(parentNode.left) == getValue(childNode)):
         parentNode.left = None
 
-    if (parentNode.right is not None) and parentNode.right == childNode:
+    if (parentNode.right is not None) and (getValue(parentNode.right) == getValue(childNode)):
         parentNode.right = None
 
     return
-
-def getValues(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]):
-    return [currentLevelNode.val for currentLevelNode in currentLevelNodeToParentDict.keys()]
 
 def getNextLevelNodeToParentDict(currentLevelNodeToParentDict : dict[TreeNode, TreeNode]) -> Tuple[dict[TreeNode, TreeNode], bool]:
     foundInvalidNode = False
