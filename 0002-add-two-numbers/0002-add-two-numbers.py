@@ -49,13 +49,11 @@ def addTwoNumbers(digitList1: Optional[ListNode], digitList2: Optional[ListNode]
     carry : int = DEFAULT_CARRY
 
     while (hasNodes(nodePair, carry)):
-        
         if endNode is None:
             (endNode, carry) = addNumbers(nodePair[0], nodePair[1], carry, reuseExistingData)
         else:
             (endNode.next, carry) = addNumbers(nodePair[0], nodePair[1], carry, reuseExistingData)
             endNode = endNode.next
-        print(carry)
 
         if beginNode is None:
             beginNode = endNode
