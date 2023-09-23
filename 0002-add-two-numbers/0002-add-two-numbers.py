@@ -39,7 +39,7 @@ def addNumbers(node1 : Optional[ListNode], node2 : Optional[ListNode], carry : i
         return (None, DEFAULT_CARRY)
 
     number = sum([getValue(node1), getValue(node2), carry])
-    nextCarry = getCarry(number, BASE)
+    nextCarry = 0 if (number < BASE) else getCarry(number, BASE)
     remainder = getRemainder(number, BASE)
     return (ListNode(remainder), nextCarry)
 
