@@ -44,7 +44,6 @@ def getListNode(node1 : Optional[ListNode], node2 : Optional[ListNode], remainde
         node2.val = remainder
 
     return node1 if (node1 is not None) else node2
-    
 
 def addNumbers(node1 : Optional[ListNode], node2 : Optional[ListNode], carry : int, reuseExistingData : bool) -> Tuple[Optional[ListNode], int]:
     if ((node1 is None) and (node2 is None) and (carry == 0)):
