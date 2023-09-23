@@ -1,7 +1,7 @@
 # 2. Add Two Numbers
 # Author: Kevin Zhao
 # Time Complexity: O(n)
-# Space Complexity: O(n)
+# Space Complexity: O(1) if datastructure is being reused otherwise O(n)
 
 # Definition for singly-linked list.
 # class ListNode:
@@ -44,6 +44,9 @@ def addNumbers(node1 : Optional[ListNode], node2 : Optional[ListNode], carry : i
     return (ListNode(remainder), nextCarry)
 
 def addTwoNumbers(digitList1: Optional[ListNode], digitList2: Optional[ListNode], reuseExistingData : bool) -> Optional[ListNode]:
+    if (reuseExistingData) and ((digitList1 is None) or (digitList2 is None)):
+        return (digitList1 if (digitList2 is None) else digitList2)
+
     nodePair = (digitList1, digitList2)
     beginNode = endNode = None
     carry : int = DEFAULT_CARRY
@@ -64,5 +67,5 @@ def addTwoNumbers(digitList1: Optional[ListNode], digitList2: Optional[ListNode]
 
 class Solution:
     def addTwoNumbers(self, digitList1: Optional[ListNode], digitList2: Optional[ListNode]) -> Optional[ListNode]:
-        reuseExistingData = False
+        reuseExistingData = True
         return addTwoNumbers(digitList1, digitList2, reuseExistingData)
