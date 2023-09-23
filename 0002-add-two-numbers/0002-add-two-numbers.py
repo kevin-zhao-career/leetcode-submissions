@@ -19,20 +19,17 @@ def getNextNode(node : Optional[ListNode]) -> Optional[ListNode]:
 def getNextNodePair(nodePair : Tuple[Optional[ListNode], Optional[ListNode]]) -> Tuple[Optional[ListNode], Optional[ListNode]]:
     return (getNextNode(nodePair[0]), getNextNode(nodePair[1]))
 
-def getNextNodes(nodePair : Tuple[Optional[ListNode], Optional[ListNode]], node: Optional[ListNode]) -> Tuple[Tuple[Optional[ListNode], Optional[ListNode]], Optional[ListNode]]:
-    return (getNextNodePair(nodePair), node.next if (node is not None) else None)
+def hasNode(node : Optional[ListNode]) -> bool:
+    return (node is not None)
 
-def hasNextNode(node : Optional[ListNode]) -> bool:
-    return (node is not None) and (node.next is not None)
-
-def hasNextNodes(nodePair : Tuple[Optional[ListNode], Optional[ListNode]]) -> bool:
-    return hasNextNode(nodePair[0]) or hasNextNode(nodePair[1])
+def hasNodes(nodePair : Tuple[Optional[ListNode], Optional[ListNode]], carry:int) -> bool:
+    return hasNode(nodePair[0]) or hasNode(nodePair[1]) or (carry > 0)
 
 def getValue(node : Optional[ListNode]) -> int:
     return node.val if (node is not None) else DEFAULT_VALUE
 
 def getCarry(number : int, base : int) -> int:
-    return (number / base)
+    return int(number / base)
 
 def getRemainder(number : int, base : int) -> int:
     return (number % base)
@@ -51,18 +48,21 @@ def addTwoNumbers(digitList1: Optional[ListNode], digitList2: Optional[ListNode]
     beginNode = endNode = None
     carry : int = DEFAULT_CARRY
 
-    while (hasNextNodes(nodePair)):
+    while (hasNodes(nodePair, carry)):
+        
         if endNode is None:
             (endNode, carry) = addNumbers(nodePair[0], nodePair[1], carry, reuseExistingData)
         else:
             (endNode.next, carry) = addNumbers(nodePair[0], nodePair[1], carry, reuseExistingData)
+            endNode = endNode.next
+        print(carry)
 
         if beginNode is None:
             beginNode = endNode
 
-        (nodePair, endNode) = getNextNodes(nodePair, endNode)
-
-    return beginNode 
+        nodePair = getNextNodePair(nodePair)
+    
+    return ListNode(0) if (beginNode is None) else beginNode
 
 class Solution:
     def addTwoNumbers(self, digitList1: Optional[ListNode], digitList2: Optional[ListNode]) -> Optional[ListNode]:
