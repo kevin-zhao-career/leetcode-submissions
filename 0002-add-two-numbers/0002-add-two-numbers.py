@@ -62,7 +62,7 @@ def addTwoNumbers(digitList1: Optional[ListNode], digitList2: Optional[ListNode]
 
         nodePair = getNextNodePair(nodePair)
     
-    return ListNode(0) if (beginNode is None) else beginNode
+    return beginNode
 
 class Solution:
     def addTwoNumbers(self, digitList1: Optional[ListNode], digitList2: Optional[ListNode]) -> Optional[ListNode]:
