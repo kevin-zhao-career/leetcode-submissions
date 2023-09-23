@@ -39,9 +39,9 @@ def getListNode(node1 : Optional[ListNode], node2 : Optional[ListNode], remainde
         return ListNode(remainder)
     
     if (node1 is not None):
-        node1.val = remainer
+        node1.val = remainder
     else:
-        node2.val = reaminder
+        node2.val = remainder
 
     return node1 if (node1 is not None) else node2
     
@@ -53,7 +53,7 @@ def addNumbers(node1 : Optional[ListNode], node2 : Optional[ListNode], carry : i
     number = sum([getValue(node1), getValue(node2), carry])
     nextCarry = getCarry(number, BASE)
     remainder = getRemainder(number, BASE)
-    return (ListNode(remainder), nextCarry)
+    return (getListNode(node1, node2, remainder, reuseExistingData), nextCarry)
 
 def addTwoNumbers(digitList1: Optional[ListNode], digitList2: Optional[ListNode], reuseExistingData : bool) -> Optional[ListNode]:
     if (reuseExistingData) and ((digitList1 is None) or (digitList2 is None)):
