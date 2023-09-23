@@ -34,6 +34,18 @@ def getCarry(number : int, base : int) -> int:
 def getRemainder(number : int, base : int) -> int:
     return (number % base)
 
+def getListNode(node1 : Optional[ListNode], node2 : Optional[ListNode], remainder: int, reuseExistingData : bool) -> Optional[ListNode]:
+    if (not reuseExistingData) or ((node1 is None) and (node2 is None)):
+        return ListNode(remainder)
+    
+    if (node1 is not None):
+        node1.val = remainer
+    else:
+        node2.val = reaminder
+
+    return node1 if (node1 is not None) else node2
+    
+
 def addNumbers(node1 : Optional[ListNode], node2 : Optional[ListNode], carry : int, reuseExistingData : bool) -> Tuple[Optional[ListNode], int]:
     if ((node1 is None) and (node2 is None) and (carry == 0)):
         return (None, DEFAULT_CARRY)
