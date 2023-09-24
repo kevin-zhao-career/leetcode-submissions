@@ -12,7 +12,11 @@ NEGATIVE_SIGN = '-'
 ZERO_ORDINAL = ord('0')
 BASE = 10
 
+NOT_A_DIGIT_EXCEPTION = "%s is not a digit"
+
 def getDigit(character : str) -> int:
+    if not character.isdigit():
+        raise ValueError(NOT_A_DIGIT_EXCEPTION.format(character))
     return (ord(character) - ZERO_ORDINAL)
 
 def getNumber(isNegative : bool, positiveNumber : int) -> int:
@@ -55,16 +59,16 @@ class Solution:
         beginIndex = getBeginIndex(string, nonWhitespaceCharacterBeginIndex)
 
         for index in range(beginIndex, len(string)):
-            character = string[index]
-            
-            if not character.isdigit():
+            try:
+                character = string[index]
+                currentDigit = getDigit(character)
+
+                if hitIntegerBoundary(isNegative, currentPositiveInteger, currentDigit):
+                    return getRespectiveSignedBoundary(isNegative)
+
+                currentPositiveInteger = updateCurrentPositiveInteger(currentPositiveInteger, currentDigit)
+            except Exception as error:
                 break
-            currentDigit = getDigit(character)
-
-            if hitIntegerBoundary(isNegative, currentPositiveInteger, currentDigit):
-                return getRespectiveSignedBoundary(isNegative)
-
-            currentPositiveInteger = updateCurrentPositiveInteger(currentPositiveInteger, currentDigit)
 
         return getNumber(isNegative, currentPositiveInteger)
         
