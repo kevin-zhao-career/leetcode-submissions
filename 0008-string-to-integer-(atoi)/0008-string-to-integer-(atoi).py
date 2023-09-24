@@ -13,17 +13,13 @@ ZERO_ORDINAL = ord('0')
 BASE = 10
 
 def getDigit(character : str) -> int:
-    return ord(character) - ZERO_ORDINAL
+    return (ord(character) - ZERO_ORDINAL)
 
 def getNumber(isNegative : bool, positiveNumber : int) -> int:
     return (-positiveNumber) if isNegative else (positiveNumber)
 
 def getNonWhitespaceCharacterBeginIndex(string : str) -> int:
-    for index, character in enumerate(string):
-        if not character.isspace():
-            return index
-
-    return len(string)
+    return next((index for index, character in enumerate(string) if not character.isspace()), len(string))
 
 def getIsNegative(character : str) -> bool:
     return (character == NEGATIVE_SIGN)
@@ -60,9 +56,11 @@ class Solution:
 
         for index in range(beginIndex, len(string)):
             character = string[index]
+            
             if not character.isdigit():
                 break
             currentDigit = getDigit(character)
+
             if hitIntegerBoundary(isNegative, currentPositiveInteger, currentDigit):
                 return getRespectiveSignedBoundary(isNegative)
 
