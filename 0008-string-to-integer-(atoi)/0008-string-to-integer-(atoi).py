@@ -51,12 +51,11 @@ def updateCurrentPositiveInteger(currentPositiveInteger : int, nextDigit : int) 
 class Solution:
     def myAtoi(self, string: str) -> int:      
         nonWhitespaceCharacterBeginIndex = getNonWhitespaceCharacterBeginIndex(string)
-        if nonWhitespaceCharacterBeginIndex >= len(string):
-            return 0
-        isNegative = getIsNegative(string[nonWhitespaceCharacterBeginIndex])
-
-        currentPositiveInteger = 0
+        isNegative = (getIsNegative(string[nonWhitespaceCharacterBeginIndex])
+            if (nonWhitespaceCharacterBeginIndex < len(string)) else False)
+        
         beginIndex = getBeginIndex(string, nonWhitespaceCharacterBeginIndex)
+        currentPositiveInteger = 0
 
         for index in range(beginIndex, len(string)):
             try:
