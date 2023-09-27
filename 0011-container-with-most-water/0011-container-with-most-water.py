@@ -8,16 +8,20 @@
 
 class Solution:
     def maxArea(self, height: List[int]) -> int:
-        left, right = 0, len(height) - 1  # Initialize two pointers, left and right, pointing to the start and end of the height list respectively.
-        out = 0  # Initialize the maximum area to 0.
+        left, right = 0, len(height)-1
+        maxWater = 0
+        while left < right:
+            leftHold = height[left]
+            rightHold = height[right]
 
-        while left < right:  # Continue the loop until the pointers meet or cross each other.
-            area = min(height[left], height[right]) * (right - left)  # Calculate the area of the container formed by the current left and right boundaries.
-            out = max(out, area)  # Update the maximum area if the current area is greater.
+            minHeight = min(leftHold,rightHold)
+            currentMaxWater = minHeight * (right - left)
+            
+            maxWater = max(maxWater, currentMaxWater )
 
-            if height[left] < height[right]:  # If the height at the left pointer is smaller than the height at the right pointer:
-                left += 1  # Move the left pointer to the right.
-            else:  # If the height at the left pointer is greater than or equal to the height at the right pointer:
-                right -= 1  # Move the right pointer to the left.
+            if leftHold <= rightHold:
+                left += 1
+            else:
+                right -= 1
 
-        return out  # Return the maximum area of water that can be contained.
+        return maxWater  # Return the maximum area of water that can be contained.
