@@ -29,12 +29,11 @@ def generateNumberLists(singleDigitString : str, fiveDigitString : str, tenDigit
             baseFiveString = tenDigitString if (number >= 9) else fiveDigitString
             numberList.append(singleDigitString + baseFiveString)
             continue
-        elif number >= 5:
-            singleDigitNumber = (number - 5) if (number >= 5) else number
-            fiveDigitString = fiveDigitString if (number >= 5) else ""
-            numberList.append(fiveDigitString + (singleDigitString * singleDigitNumber))
         else:
-            numberList.append(singleDigitString * number) 
+            singleDigitNumber = (number - 5) if (number >= 5) else number
+            baseFiveString = fiveDigitString if (number >= 5) else ""
+            numberList.append(baseFiveString + (singleDigitString * singleDigitNumber))
+
     return numberList
 
 def getBaseTenOrderedDict(maximumBasePower : int) -> OrderedDict[int, List[str]]:
