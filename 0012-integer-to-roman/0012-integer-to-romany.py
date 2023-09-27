@@ -6,13 +6,23 @@
 from collections import OrderedDict
 
 def generateNumberLists(singleDigitString : str, fiveDigitString : str, tenDigitString) -> List[str]:
-    return []
+    numberList = []
+    for number in range(0, 10):
+        if number == 9:
+            numberList.append(singleDigitString + tenDigitString)
+        elif number == 4:
+            numberList.append(singleDigitString + fiveDigitString)
+        elif number >= 5:
+            numberList.append(fiveDigitString + (singleDigitString * (number - 5)))
+        else:
+            numberList.append(singleDigitString * number) 
+    return numberList
 
 NUMBER_POWER_TO_LETTER_LISTS = OrderedDict([
-    (1, ["","I","II","III","IV","V","VI","VII","VIII","IX"]),
-    (10, ["","X","XX","XXX","XL","L","LX","LXX","LXXX","XC"]),
-    (100, ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM"]),
-    (1000, ["","M","MM","MMM"])
+    (1, generateNumberLists("I", "V", "X")),
+    (10, generateNumberLists("X", "L", "C")),
+    (100, generateNumberLists("C", "D", "M")),
+    (1000, generateNumberLists("M", "5M", "10M"))
 ])
 
 def getDigit(number : int, currentPower : int) -> int:
