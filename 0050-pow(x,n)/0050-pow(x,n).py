@@ -11,30 +11,23 @@ def getIsNegative(number : int) -> bool:
 def getPositivePower(power : int) -> int:
     return abs(power)
 
-def getExponentialNumber(isNegativePower : bool, number : float) -> float :
-    return (1.0 / number) if (isNegativePower) else number
-
 def isOdd(number : int) -> bool:
     return (number % 2 != 0)
 
+def getExponentialNumber(isNegativePower : bool, base: float, positivePower: int, numberAccumulate : int = 1) -> float :
+    if getIsNegative(positivePower):
+        return getExponentialNumber(not isNegativePower, base, positvePower, numberAccumulate)
+    if positivePower == 0:
+        return (1.0/numberAccumulate) if isNegativePower else numberAccumulate
+    if (base == 0):
+        return (1/0) if (isNegativePower) else (0)
+    if isOdd(positivePower):
+        return getExponentialNumber(isNegativePower, base * base, positivePower >> 1, numberAccumulate * base)
+    return getExponentialNumber(isNegativePower, base * base, positivePower >> 1, numberAccumulate)   
+
 class Solution:
     def myPow(self, base: float, power: int) -> float:
-        if (power == 0):
-            return ZERO_EXPONENTIAL
-        if (base == 0):
-            return 0 if (power > 0) else (1/0)
+        positivePower = getPositivePower(power)
+        isNegativePower = getIsNegative(power)
 
-        remainingPositivePower = getPositivePower(power)
-        isNegative = getIsNegative(power)
-        
-        numberAccumulate = 1
-        currentBase = base
-        while remainingPositivePower > 0:
-            if (isOdd(remainingPositivePower)):
-                numberAccumulate *= currentBase
-            
-            currentBase *= currentBase
-            remainingPositivePower >>= 1
-
-
-        return getExponentialNumber(isNegative, numberAccumulate)
+        return getExponentialNumber(isNegativePower, base, positivePower, 1)
