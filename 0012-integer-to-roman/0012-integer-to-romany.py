@@ -28,21 +28,28 @@ def generateNumberLists(singleDigitString : str, fiveDigitString : str, tenDigit
         if oneAwayMultipleOfFive(number):
             baseFiveString = tenDigitString if (number >= 9) else fiveDigitString
             numberList.append(singleDigitString + baseFiveString)
+            continue
         elif number >= 5:
-            numberList.append(fiveDigitString + (singleDigitString * (number - 5)))
+            singleDigitNumber = (number - 5) if (number >= 5) else number
+            fiveDigitString = fiveDigitString if (number >= 5) else ""
+            numberList.append(fiveDigitString + (singleDigitString * singleDigitNumber))
         else:
             numberList.append(singleDigitString * number) 
     return numberList
 
 def getBaseTenOrderedDict(maximumBasePower : int) -> OrderedDict[int, List[str]]:
-    return OrderedDict([])
+    baseTenOrderedDict = OrderedDict([])
+    romanNumeralListLength = len(ROMAN_NUMERAL_LIST)
+    for basePower in range(0, maximumBasePower):
+        initalBase = min(basePower * 2, (romanNumeralListLength - 1))
+        initalBase2 = min(initalBase + 1, (romanNumeralListLength - 1))
+        initalBase3 = min(initalBase + 2, (romanNumeralListLength - 1))
+        baseTenOrderedDict[BASE**basePower] = generateNumberLists(ROMAN_NUMERAL_LIST[initalBase],
+                    ROMAN_NUMERAL_LIST[initalBase2],
+                    ROMAN_NUMERAL_LIST[initalBase3])
+    return baseTenOrderedDict
 
-NUMBER_POWER_TO_LETTER_LISTS = OrderedDict([
-    (1, generateNumberLists("I", "V", "X")),
-    (10, generateNumberLists("X", "L", "C")),
-    (100, generateNumberLists("C", "D", "M")),
-    (1000, generateNumberLists("M", "5M", "10M"))
-])
+NUMBER_POWER_TO_LETTER_LISTS = getBaseTenOrderedDict(4)
 
 def getDigit(number : int, currentPower : int) -> int:
     return int((number % (currentPower * BASE)) / currentPower)
