@@ -6,6 +6,8 @@ BASE = 10
 INTEGER_MININUM : int = -(2**31)
 INTEGER_MAXIMUM : int = (2**31 - 1)
 
+INTEGER_BOUNDARY_RETURN : int = 0
+
 def getIsNegative(integer : int) -> bool:
     return (integer < 0)
 
@@ -22,7 +24,7 @@ def getLastDigit(number : int) -> int:
 
 def reverseNumber(isNegative : bool, positiveInteger : int, currentPower : int, reverseIntegerAccumulator : int) -> int:
     if integerBoundaryOverflow(isNegative, reverseIntegerAccumulator, getLastDigit(positiveInteger)):
-        return 0
+        return INTEGER_BOUNDARY_RETURN
     if positiveInteger <= 0:
         return -reverseIntegerAccumulator if (isNegative) else reverseIntegerAccumulator
     return reverseNumber(isNegative, int(positiveInteger / BASE), currentPower + 1, (reverseIntegerAccumulator * BASE) + getLastDigit(positiveInteger))
