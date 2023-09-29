@@ -10,8 +10,10 @@
  * @return {Promise}
  */
 var addTwoPromises = async function(promise1, promise2) {
-    const [value1, value2] = await Promise.all([promise1, promise2]);
-    return value1 + value2;
+    return Promise.all([promise1, promise2]).then((values) => {
+      const sum = values.reduce((accumulator, value) => accumulator + value, 0);
+      return sum;
+    });  
 };
 
 /**
